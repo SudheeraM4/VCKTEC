@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d18">
+  <title>Member portal — VCKTEC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="min-h-screen bg-ink text-slate-100 antialiased">
+  <header class="site-header">
+    <nav class="site-nav page-shell" aria-label="Main navigation">
+      <a class="brand" href="index.html"><img src="assets/images/society-logo.jpg" alt=""><span><strong>VCKTEC</strong><small>Vidyartha College Kandy</small></span></a>
+      <a class="text-link" href="index.html">← Back to site</a>
+    </nav>
+  </header>
+  <main class="portal-page page-shell">
+    <div class="portal-aside">
+      <p class="section-kicker">VCKTEC COMMUNITY</p>
+      <h1>Your next idea<br>starts <span class="gradient-text">here.</span></h1>
+      <p>Sign in to manage society activities or register to join the community. New registrations are reviewed by a society owner before access is activated.</p>
+      <div class="portal-emblems">
+        <img src="assets/images/school-logo.jpg" alt="Vidyartha College crest">
+        <img src="assets/images/society-logo.jpg" alt="VCKTEC emblem">
+      </div>
+    </div>
+    <section class="auth-card" aria-labelledby="auth-title">
+      <div class="auth-tabs" role="tablist" aria-label="Member account">
+        <button class="auth-tab is-active" type="button" role="tab" id="login-tab" aria-selected="true" aria-controls="login-panel">Sign in</button>
+        <button class="auth-tab" type="button" role="tab" id="register-tab" aria-selected="false" aria-controls="register-panel">Create account</button>
+      </div>
+      <div id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+        <p class="section-kicker">MEMBER ACCESS</p><h2 id="auth-title">Welcome back.</h2>
+        <form id="login-form" class="form-stack">
+          <label>Email address<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" required minlength="6"></label>
+          <button class="button button-primary button-full" type="submit">Sign in <span aria-hidden="true">→</span></button>
+        </form>
+      </div>
+      <div id="register-panel" role="tabpanel" aria-labelledby="register-tab" hidden>
+        <p class="section-kicker">JOIN THE COMMUNITY</p><h2>Create your account.</h2>
+        <form id="register-form" class="form-stack">
+          <label>Your name<input name="name" type="text" autocomplete="name" required maxlength="80"></label>
+          <label>Email address<input name="email" type="email" autocomplete="email" required></label>
+          <label>Create password<input name="password" type="password" autocomplete="new-password" required minlength="6"></label>
+          <button class="button button-primary button-full" type="submit">Request membership <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="form-note">Your account will stay pending until approved by a society owner.</p>
+      </div>
+      <p class="form-message" id="auth-message" role="status" aria-live="polite"></p>
+      <p class="form-note config-note" id="firebase-config-note" hidden>Firebase has not been configured yet. Add your project settings in <code>assets/js/firebase.js</code>.</p>
+    </section>
+  </main>
+  <script type="module" src="assets/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d18">
+  <title>Member dashboard — VCKTEC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="min-h-screen bg-ink text-slate-100 antialiased">
+  <header class="site-header">
+    <nav class="site-nav page-shell" aria-label="Main navigation">
+      <a class="brand" href="index.html"><img src="assets/images/society-logo.jpg" alt=""><span><strong>VCKTEC</strong><small>Member dashboard</small></span></a>
+      <div class="nav-links dashboard-nav">
+        <a href="index.html">← Public website</a>
+        <button class="button button-small button-outline" type="button" id="logout-button">Sign out</button>
+      </div>
+    </nav>
+  </header>
+  <main class="dashboard page-shell">
+    <section class="dashboard-gate" id="dashboard-gate" aria-live="polite">
+      <p class="section-kicker">MEMBER PORTAL</p>
+      <h1 id="gate-title">Checking your access…</h1>
+      <p id="gate-copy">Please wait while we verify your membership.</p>
+      <a class="button button-primary" id="gate-link" href="login.html" hidden>Go to sign in</a>
+    </section>
+    <div class="dashboard-content" id="dashboard-content" hidden>
+      <div class="dashboard-heading">
+        <div><p class="section-kicker">VCKTEC MEMBER PORTAL</p><h1>Good to have you <span class="gradient-text">here.</span></h1><p id="welcome-line"></p></div>
+        <span class="role-badge" id="role-badge"></span>
+      </div>
+      <div class="dashboard-grid" id="member-tools">
+        <section class="panel-card">
+          <p class="section-kicker">YOUR IDEAS</p><h2>Suggest an event.</h2>
+          <p class="panel-intro">Share an event idea with the society team. It will be reviewed before appearing on the public site.</p>
+          <form id="event-suggestion-form" class="form-stack">
+            <label>Event title<input name="title" required maxlength="100"></label>
+            <div class="form-row"><label>Date<input name="date" type="date" required></label><label>Time<input name="time" type="time" required></label></div>
+            <label>Description<textarea name="description" rows="3" required maxlength="800"></textarea></label>
+            <button class="button button-outline" type="submit">Send event suggestion <span aria-hidden="true">→</span></button>
+          </form>
+        </section>
+        <section class="panel-card">
+          <p class="section-kicker">SHARE A MOMENT</p><h2>Suggest a photo.</h2>
+          <p class="panel-intro">Upload a club photo and suggest an album. A society manager will review it before it is published.</p>
+          <form id="photo-suggestion-form" class="form-stack">
+            <label>Album or event name<input name="album" required maxlength="100"></label>
+            <label>Photo caption<input name="caption" required maxlength="140"></label>
+            <label>Choose an image<input name="photo" type="file" accept="image/*" required></label>
+            <button class="button button-outline" type="submit">Send photo suggestion <span aria-hidden="true">↑</span></button>
+          </form>
+        </section>
+      </div>
+      <div class="manager-tools" id="manager-tools" hidden>
+        <nav class="dashboard-tabs" aria-label="Dashboard sections" role="tablist">
+          <button class="dashboard-tab is-active" id="tab-events" type="button" role="tab" aria-selected="true" aria-controls="manage-events">Events</button>
+          <button class="dashboard-tab" id="tab-gallery" type="button" role="tab" aria-selected="false" aria-controls="manage-gallery">Gallery</button>
+          <button class="dashboard-tab" id="tab-weekly" type="button" role="tab" aria-selected="false" aria-controls="manage-weekly">Weekly</button>
+          <button class="dashboard-tab owner-only" id="tab-board" type="button" role="tab" aria-selected="false" aria-controls="manage-board" hidden>Board</button>
+          <button class="dashboard-tab" id="tab-reviews" type="button" role="tab" aria-selected="false" aria-controls="manage-reviews">Reviews & members</button>
+        </nav>
+        <section class="dashboard-panel" id="manage-events" role="tabpanel" aria-labelledby="tab-events">
+          <div class="dashboard-section-heading"><div><p class="section-kicker">EVENT PROGRAMME</p><h2 id="event-form-heading">Create an event.</h2><p class="panel-intro">Add the event cover, schedule, venue, full description, topic, and tags.</p></div></div>
+          <div class="dashboard-grid manager-grid">
+            <section class="panel-card"><form id="event-form" class="form-stack">
+              <input name="eventId" type="hidden"><input name="previousCoverPath" type="hidden">
+              <label>Event title<input name="title" required maxlength="120" placeholder="e.g. Build Night: Arduino"></label>
+              <div class="form-row"><label>Topic<input name="topic" maxlength="60" placeholder="Workshop"></label><label>Venue<input name="venue" maxlength="120" placeholder="School auditorium"></label></div>
+              <div class="form-row"><label>Start date<input name="date" type="date" required></label><label>Start time<input name="time" type="time" required></label></div>
+              <div class="form-row"><label>End date (optional)<input name="endDate" type="date"></label><label>End time (optional)<input name="endTime" type="time"></label></div>
+              <label>Full event description<textarea name="description" rows="7" required maxlength="6000" placeholder="What will happen? Who is it for? What should participants bring or expect?"></textarea></label>
+              <label>Tags <span class="field-hint">Separate with commas</span><input name="tags" maxlength="240" placeholder="Robotics, Beginner friendly, Workshop"></label>
+              <label>Event cover image<input name="cover" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><span class="field-hint">JPG, PNG, WebP, or GIF. Maximum 8 MB.</span></label>
+              <div class="upload-preview" id="event-cover-preview" hidden></div>
+              <div class="form-row"><button class="button button-primary" type="submit">Publish event</button><button class="button button-outline" type="button" id="cancel-event-edit" hidden>Cancel edit</button></div>
+            </form></section>
+            <section class="panel-card"><p class="section-kicker">PUBLISHED EVENTS</p><div class="managed-list content-manager-list" id="managed-events"></div></section>
+          </div>
+        </section>
+        <section class="dashboard-panel" id="manage-gallery" role="tabpanel" aria-labelledby="tab-gallery" hidden>
+          <div class="dashboard-section-heading"><div><p class="section-kicker">PHOTO & VIDEO ARCHIVE</p><h2>Build an album.</h2><p class="panel-intro">Add several photos or videos at once. Connect them to an event or name a new album.</p></div></div>
+          <div class="dashboard-grid manager-grid">
+            <section class="panel-card"><form id="gallery-form" class="form-stack">
+              <label>Album name<input name="album" required maxlength="120" placeholder="e.g. Robotics Workshop 2026"></label>
+              <label>Connect to event <select name="eventId"><option value="">Standalone album</option></select></label>
+              <label>Media caption (optional)<input name="caption" maxlength="180" placeholder="A short caption for all selected items"></label>
+              <label>Select photos or videos<input name="media" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" multiple required><span class="field-hint">Images up to 8 MB each; videos up to 50 MB each.</span></label>
+              <div class="upload-preview upload-preview-grid" id="gallery-preview" hidden></div>
+              <button class="button button-primary" type="submit">Upload to album <span>↑</span></button>
+            </form></section>
+            <section class="panel-card"><p class="section-kicker">PUBLISHED MEDIA</p><div class="managed-list content-manager-list" id="managed-photos"></div></section>
+          </div>
+        </section>
+        <section class="dashboard-panel" id="manage-weekly" role="tabpanel" aria-labelledby="tab-weekly" hidden>
+          <div class="dashboard-section-heading"><div><p class="section-kicker">CURIOSITY, DELIVERED</p><h2 id="weekly-form-heading">Write a Weekly post.</h2><p class="panel-intro">Give each technology story a strong image, clear topic, detailed explanation, useful tags, and a trusted source.</p></div></div>
+          <div class="dashboard-grid manager-grid">
+            <section class="panel-card"><form id="weekly-form" class="form-stack">
+              <input name="postId" type="hidden"><input name="previousImagePath" type="hidden">
+              <label>Post title<input name="title" required maxlength="150" placeholder="What is the big idea?"></label>
+              <label>Topic<input name="topic" required maxlength="70" placeholder="Artificial intelligence"></label>
+              <label>Short introduction<textarea name="excerpt" rows="3" required maxlength="400" placeholder="A clear hook for the post card"></textarea></label>
+              <label>Full post<textarea name="description" rows="8" required maxlength="8000" placeholder="Explain the idea in detail. Use paragraphs and plain language."></textarea></label>
+              <label>Tags <span class="field-hint">Separate with commas</span><input name="tags" maxlength="240" placeholder="AI, Science, Explained"></label>
+              <label>Source links <span class="field-hint">One secure HTTPS link per line</span><textarea name="sources" rows="3" required maxlength="1200" placeholder="https://trusted-source.example/article"></textarea></label>
+              <label>Cover image<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><span class="field-hint">JPG, PNG, WebP, or GIF. Maximum 8 MB.</span></label>
+              <div class="upload-preview" id="weekly-image-preview" hidden></div>
+              <div class="form-row"><button class="button button-primary" type="submit">Publish post</button><button class="button button-outline" type="button" id="cancel-weekly-edit" hidden>Cancel edit</button></div>
+            </form></section>
+            <section class="panel-card"><p class="section-kicker">PUBLISHED POSTS</p><div class="managed-list content-manager-list" id="managed-weekly"></div></section>
+          </div>
+        </section>
+        <section class="dashboard-panel" id="manage-board" role="tabpanel" aria-labelledby="tab-board" hidden>
+          <div class="dashboard-section-heading"><div><p class="section-kicker">OWNER-ONLY CONTROLS</p><h2 id="board-form-heading">Introduce a board member.</h2><p class="panel-intro">Only the society owner can add, edit, reorder, or remove board profiles shown on the public Board page.</p></div></div>
+          <div class="dashboard-grid manager-grid">
+            <section class="panel-card"><form id="board-form" class="form-stack">
+              <input name="memberId" type="hidden"><input name="previousImagePath" type="hidden">
+              <label>Full name<input name="name" required maxlength="100"></label>
+              <label>Board rank or role<input name="rank" required maxlength="90" placeholder="President, Secretary, Treasurer..."></label>
+              <label>Short profile<textarea name="bio" rows="4" maxlength="600" placeholder="A few words about their work in VCKTEC"></textarea></label>
+              <label>Display order<input name="order" type="number" min="1" max="100" value="1" required></label>
+              <label>Profile photo<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><span class="field-hint">JPG, PNG, WebP, or GIF. Maximum 8 MB.</span></label>
+              <div class="upload-preview" id="board-image-preview" hidden></div>
+              <div class="form-row"><button class="button button-primary" type="submit">Save board profile</button><button class="button button-outline" type="button" id="cancel-board-edit" hidden>Cancel edit</button></div>
+            </form></section>
+            <section class="panel-card"><p class="section-kicker">PUBLIC BOARD PROFILES</p><div class="managed-list content-manager-list" id="managed-board"></div></section>
+          </div>
+        </section>
+        <section class="dashboard-panel" id="manage-reviews" role="tabpanel" aria-labelledby="tab-reviews" hidden>
+          <div class="dashboard-section-heading"><div><p class="section-kicker">MEMBER COMMUNITY</p><h2>Reviews & membership.</h2><p class="panel-intro">Review member event and photo ideas, then approve accounts and assign member or president access.</p></div></div>
+          <section class="panel-card review-panel" id="review-panel" hidden><p class="section-kicker">OWNER & PRESIDENT CONTROLS</p><h3 class="list-subheading">Membership requests</h3><div class="managed-list" id="pending-members"></div><h3 class="list-subheading">Current members</h3><div class="managed-list" id="active-members"></div></section>
+          <section class="panel-card review-panel"><p class="section-kicker">COMMUNITY SUBMISSIONS</p><div class="suggestion-columns"><div><h3 class="list-subheading">Event ideas</h3><div class="managed-list" id="event-suggestions"></div></div><div><h3 class="list-subheading">Photo ideas</h3><div class="managed-list" id="photo-suggestions"></div></div></div></section>
+        </section>
+      </div>
+      <p class="form-message dashboard-message" id="dashboard-message" role="status" aria-live="polite"></p>
+    </div>
+  </main>
+  <script type="module" src="assets/js/auth.js"></script>
+  <script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>

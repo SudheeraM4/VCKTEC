@@ -1,0 +1,154 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasProfile() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isApprovedMember() {
+      return hasProfile()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.approved == true;
+    }
+
+    function isOwner() {
+      return isApprovedMember()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
+    }
+
+    function isPresident() {
+      return isApprovedMember()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'president';
+    }
+
+    function isManager() {
+      return isOwner() || isPresident();
+    }
+
+    match /users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['name', 'email', 'role', 'approved', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == 'pending'
+        && request.resource.data.approved == false;
+
+      allow read: if signedIn() && (request.auth.uid == userId || isManager());
+
+      allow update: if (isOwner() || (isPresident() && resource.data.role != 'owner'))
+        && userId != request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'approved'])
+        && request.resource.data.role in ['member', 'president']
+        && request.resource.data.approved == true;
+
+      allow delete: if false;
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if isManager()
+        && request.resource.data.title is string
+        && request.resource.data.date is string
+        && request.resource.data.time is string
+        && request.resource.data.description is string
+        && (!request.resource.data.keys().hasAny(['coverImageUrl']) || request.resource.data.coverImageUrl is string)
+        && (!request.resource.data.keys().hasAny(['topic']) || request.resource.data.topic is string)
+        && (!request.resource.data.keys().hasAny(['venue']) || request.resource.data.venue is string)
+        && (!request.resource.data.keys().hasAny(['tags']) || request.resource.data.tags is list);
+      allow update: if isManager()
+        && request.resource.data.title is string
+        && request.resource.data.date is string
+        && request.resource.data.time is string
+        && request.resource.data.description is string
+        && (!request.resource.data.keys().hasAny(['coverImageUrl']) || request.resource.data.coverImageUrl is string)
+        && (!request.resource.data.keys().hasAny(['topic']) || request.resource.data.topic is string)
+        && (!request.resource.data.keys().hasAny(['venue']) || request.resource.data.venue is string)
+        && (!request.resource.data.keys().hasAny(['tags']) || request.resource.data.tags is list);
+      allow delete: if isManager();
+    }
+
+    match /gallery/{photoId} {
+      allow read: if true;
+      allow create: if isManager()
+        && request.resource.data.album is string
+        && request.resource.data.caption is string
+        && ((request.resource.data.keys().hasAny(['mediaUrl'])
+          && request.resource.data.mediaUrl is string
+          && request.resource.data.mediaUrl.matches('https://.*'))
+          || (request.resource.data.keys().hasAny(['imageUrl'])
+          && request.resource.data.imageUrl is string
+          && request.resource.data.imageUrl.matches('https://.*')));
+      allow update, delete: if isManager();
+    }
+
+    match /weeklyPosts/{postId} {
+      allow read: if true;
+      allow create, update: if isManager()
+        && request.resource.data.title is string
+        && request.resource.data.topic is string
+        && request.resource.data.excerpt is string
+        && request.resource.data.description is string
+        && request.resource.data.tags is list
+        && request.resource.data.sourceUrl is string
+        && request.resource.data.sourceUrl.matches('https://.*')
+        && (!request.resource.data.keys().hasAny(['sources']) || request.resource.data.sources is list)
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.matches('https://.*');
+      allow delete: if isManager();
+    }
+
+    match /boardMembers/{memberId} {
+      allow read: if true;
+      allow create, update: if isOwner()
+        && request.resource.data.name is string
+        && request.resource.data.rank is string
+        && request.resource.data.bio is string
+        && request.resource.data.order is int
+        && request.resource.data.order >= 1
+        && request.resource.data.order <= 100
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.matches('https://.*');
+      allow delete: if isOwner();
+    }
+
+    match /eventSuggestions/{suggestionId} {
+      allow create: if isApprovedMember()
+        && request.resource.data.submittedBy == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.title is string
+        && request.resource.data.date is string
+        && request.resource.data.time is string
+        && request.resource.data.description is string;
+      allow read: if isManager()
+        || (isApprovedMember() && resource.data.submittedBy == request.auth.uid);
+      allow update: if isManager()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.status in ['approved', 'rejected']
+        && request.resource.data.reviewedBy == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /photoSuggestions/{suggestionId} {
+      allow create: if isApprovedMember()
+        && request.resource.data.submittedBy == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.album is string
+        && request.resource.data.caption is string
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.matches('https://.*')
+        && request.resource.data.storagePath is string;
+      allow read: if isManager()
+        || (isApprovedMember() && resource.data.submittedBy == request.auth.uid);
+      allow update: if isManager()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedBy', 'reviewedAt'])
+        && request.resource.data.status in ['approved', 'rejected']
+        && request.resource.data.reviewedBy == request.auth.uid;
+      allow delete: if false;
+    }
+  }
+}
